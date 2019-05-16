@@ -31,8 +31,15 @@ export default class App extends Component<Props> {
       Balance:'',
       petrol:'' };
   }
+
+
+
+
+   action = () =>{
+    console.log("entered addedSource");
+   }
+
   register_user = () => {
-    
     var that = this;
     const { Breakfast } = this.state;
     const { Initial_Amount } = this.state;
@@ -125,9 +132,9 @@ onChangeText={(Dinner) => this.setState({Dinner})}
       onChangeText={(petrol) => this.setState({petrol})}
           />
 
-        <Mybutton
-        title="Store events"
-        customClick={this.register_user.bind(this)}
+        <Button
+        title="Update User"
+        onPress={this.action} 
           />
       
         </KeyboardAvoidingView>
