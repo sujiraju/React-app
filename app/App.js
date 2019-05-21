@@ -1,8 +1,30 @@
+    
 import React, { Component } from 'react'
 import { View, Text, TouchableOpacity, TextInput, StyleSheet,Button,ScrollView } from 'react-native'
 
+var SQLite = require('react-native-sqlite-storage')
+var db =SQLite.openDatabase({name:'test.db',createFromLocation:'~moneydb.db'})
 
 class Inputs extends Component {
+
+   constructor(props)
+   {
+      super(props)
+
+     db.transaction((tx) => {
+      tx.executeSql('SELECT * FROM amt where date =?',['wed'],(tx,results)=>
+      {
+         var len = results.rows.length;
+         if(len>0)
+         {
+            var row=results.rows.item(0);
+            console.log(row.date);
+         }
+
+      });
+   });
+   }
+   
    state = {
       bf: '',
      lun: '',
@@ -11,6 +33,7 @@ class Inputs extends Component {
      extra:'',
      amouont:'',
    }
+
    handleamount = (text) =>{
      this.setState({amouont:text})
    }
@@ -30,7 +53,7 @@ handleextra = (text) => {
   this.setState({ extra: text })
 }
    login = () => {
-             alert(Number(this.state.bf)+Number(this.state.lun)+Number(this.state.dinner))
+             //alert(Number(this.state.bf)+Number(this.state.lun)+Number(this.state.dinner))
             console.log(Number(this.state.bf)+Number(this.state.lun)+Number(this.state.dinner))
    }
    render() {
