@@ -1,16 +1,15 @@
     
 import React, { Component } from 'react'
-import { View, Text, TouchableOpacity, TextInput, StyleSheet,Button,ScrollView,FlatList } from 'react-native'
-import { createStackNavigator,createAppContainer } from "react-navigation";
+import { View, Text, TouchableOpacity, TextInput, StyleSheet,Button,ScrollView } from 'react-native'
 
 var SQLite = require('react-native-sqlite-storage')
 var db =SQLite.openDatabase({name:'test.db',createFromLocation:'~moneydb.db'})
 
-class App extends Component {
+class Inputs extends Component {
 
    constructor(props)
    {
-   super(props) 
+      super(props)
       this.state = {
          bf: '',
         lun: '',
@@ -20,7 +19,6 @@ class App extends Component {
         amouont:'',
         dbdate:'',
       }
-
      db.transaction((tx) => {
       tx.executeSql('SELECT * FROM amt where amount =?',[3],(tx,results)=>
       {
@@ -36,6 +34,8 @@ class App extends Component {
    });
    }
    
+ 
+
    handleamount = (text) =>{
      this.setState({amouont:text})
    }
@@ -81,7 +81,7 @@ handleextra = (text) => {
          
                });
             });
-      /*  db.transaction(function(tx) {
+          /*  db.transaction(function(tx) {
               tx.executeSql(
                 'INSERT INTO amt (bf, lunch, amount) VALUES (?,?,?)',
                 [bf,lun,dinner],
@@ -94,8 +94,8 @@ handleextra = (text) => {
                   }
                 }
               );
-            }); 
-      */
+            });
+*/
 
           } else {
             alert('Please fill breakfast');
@@ -112,9 +112,9 @@ handleextra = (text) => {
       return (
         <ScrollView>
          <View style = {styles.container}>
-         <Button  title="view data" onPress={() => this.props.navigation.navigate('viewdata')}/>
+          <Button onPress={() => this.props.navigation.navigate('View')} title="viewdata"/>
+    
          <Text style={{fontSize:20 , margin: 15,height: 25}}>Amount</Text>
-        
          <TextInput style = {styles.input}
              underlineColorAndroid = "transparent"
              placeholder = "Initial amount in your hand"
@@ -177,53 +177,7 @@ handleextra = (text) => {
       )
    }
 }
-
-
-class vd extends Component 
-  {
-    constructor(props) 
-    {
-      super(props);
-      this.state = {
-        FlatListItems: [],
-      };
-      db.transaction(tx => {
-        tx.executeSql('SELECT * FROM amt', [], (tx, results) => {
-          var temp = [];
-          for (let i = 0; i < results.rows.length; ++i) {
-            temp.push(results.rows.item(i));
-          }
-          this.setState({
-            FlatListItems: temp,
-          });
-        });
-      });
-    }
-    ListViewItemSeparator = () =>
-    {
-    return ( <View style={{ height: 0.2, width: '100%', backgroundColor: '#808080' }} /> );
-    };
-
-    render() {
-      return (
-        <View>
-          <FlatList
-            data={this.state.FlatListItems}
-            ItemSeparatorComponent={this.ListViewItemSeparator}
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={({ item }) => (
-              <View key={item.bf} style={{ backgroundColor: 'white', padding: 20 }}>
-                <Text>BreakFast: {item.bf}</Text>
-                <Text>Lunch: {item.lunch}</Text>
-                <Text>Amount: {item.amount}</Text>
-                <Text>Date: {item.date}</Text>
-              </View>
-            )}
-          />
-        </View>
-      );     
- }
-}
+export default Inputs
 
 const styles = StyleSheet.create({
    container: {
@@ -247,11 +201,3 @@ const styles = StyleSheet.create({
 })
 
 
-const MainNavigator = createStackNavigator
-({ 
-     home:App, 
-   viewdata:vd 
-});
-
-const Appcontainer = createAppContainer(MainNavigator);
-export default Appcontainer;
