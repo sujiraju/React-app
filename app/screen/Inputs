@@ -1,0 +1,203 @@
+    
+import React, { Component } from 'react'
+import { View, Text, TouchableOpacity, TextInput, StyleSheet,Button,ScrollView } from 'react-native'
+
+var SQLite = require('react-native-sqlite-storage')
+var db =SQLite.openDatabase({name:'test.db',createFromLocation:'~moneydb.db'})
+
+class Inputs extends Component {
+
+   constructor(props)
+   {
+      super(props)
+      this.state = {
+         bf: '',
+        lun: '',
+        dinner:'',
+        snacks:'',
+        extra:'',
+        amouont:'',
+        dbdate:'',
+      }
+     db.transaction((tx) => {
+      tx.executeSql('SELECT * FROM amt where amount =?',[3],(tx,results)=>
+      {
+         var len = results.rows.length;
+         if(len>0)
+         {
+            var row=results.rows.item(0);
+            console.log(row.date);
+            this.setState({ dbdate: row.date })
+         }
+
+      });
+   });
+   }
+   
+ 
+
+   handleamount = (text) =>{
+     this.setState({amouont:text})
+   }
+   handlebreakfast = (text) => {
+      this.setState({ bf: text })
+   }
+   handlelunch = (text) => {
+      this.setState({ lun: text })
+   }
+   handledinner = (text) => {
+    this.setState({ dinner: text })
+ }
+ handlesnacks = (text) => {
+  this.setState({ snacks: text })
+}
+handleextra = (text) => {
+  this.setState({ extra: text })
+}
+   login = () => {
+            //alert(Number(this.state.bf)+Number(this.state.lun)+Number(this.state.dinner))
+             alert(this.state.dbdate)
+            console.log(Number(this.state.bf)+Number(this.state.lun)+Number(this.state.dinner))
+   }
+   register_user = () => {
+      var that = this;
+      const { bf } = this.state;
+      const { lun } = this.state;
+      const { dinner } = this.state;
+      //alert(user_name, user_contact, user_address);
+      if (bf) {
+        if (lun) {
+          if (dinner) {
+            db.transaction((tx) => {
+               tx.executeSql( 'INSERT INTO amt (bf, lunch, amount,date) VALUES (?,?,?,?)',
+               [bf,lun,dinner,'mon'],(tx,results)=>
+               {
+                  console.log('Results', results.rowsAffected);
+                  if (results.rowsAffected > 0) {
+                    alert('Success You are Registered Successfully'+bf);
+                  } else {
+                    alert('Registration Failed');
+                  }
+         
+               });
+            });
+          /*  db.transaction(function(tx) {
+              tx.executeSql(
+                'INSERT INTO amt (bf, lunch, amount) VALUES (?,?,?)',
+                [bf,lun,dinner],
+                (tx, results) => {
+                  console.log('Results', results.rowsAffected);
+                  if (results.rowsAffected > 0) {
+                    alert('Success You are Registered Successfully');
+                  } else {
+                    alert('Registration Failed');
+                  }
+                }
+              );
+            });
+*/
+
+          } else {
+            alert('Please fill breakfast');
+          }
+        } else {
+          alert('Please fill lunch');
+        }
+      } else {
+        alert('Please fill amount');
+      }
+    };
+
+   render() {
+      return (
+        <ScrollView>
+         <View style = {styles.container}>
+          <Button onPress={() => this.props.navigation.navigate('View')} title="viewdata"/>
+    
+         <Text style={{fontSize:20 , margin: 15,height: 25}}>Amount</Text>
+         <TextInput style = {styles.input}
+             underlineColorAndroid = "transparent"
+             placeholder = "Initial amount in your hand"
+             placeholderTextColor = "#9a73ef"
+             keyboardType="numeric"
+             onChangeText = {this.handleamount}/>
+      
+         <Text style={{fontSize:20 , margin: 15,height: 25}}>Breakfast</Text>
+           <TextInput style = {styles.input}
+               underlineColorAndroid = "transparent"
+               placeholder = "Breakfast amount"
+               placeholderTextColor = "#9a73ef"
+               keyboardType="numeric"
+               onChangeText = {this.handlebreakfast}/>
+        
+          <Text style={{fontSize:20 , margin: 15,height: 25}}>Lunch</Text>
+            <TextInput style = {styles.input}
+               underlineColorAndroid = "transparent"
+               placeholder = "Lunch Amount"
+               placeholderTextColor = "#9a73ef"
+               keyboardType="numeric"
+               onChangeText = {this.handlelunch}/>
+    
+          <Text style={{fontSize:20 , margin: 15,height: 25}}>Dinner</Text>
+               <TextInput style = {styles.input}
+                  underlineColorAndroid = "transparent"
+                  placeholder = "Dinner Amount"
+                  placeholderTextColor = "#9a73ef"
+                  keyboardType="numeric"
+                  onChangeText = {this.handledinner}/>  
+                  
+           <Text style={{fontSize:20 , margin: 15,height: 25}}>Snacks</Text>
+               <TextInput style = {styles.input}
+                underlineColorAndroid = "transparent"
+                placeholder = "Snacks Amount"
+                placeholderTextColor = "#9a73ef"
+                keyboardType="numeric"
+                onChangeText = {this.handlesnacks}/>    
+          <Text style={{fontSize:20 , margin: 15,height: 25}}>Extra</Text>
+               <TextInput style = {styles.input}
+                 underlineColorAndroid = "transparent"
+                 placeholder = "Extra Amount"
+                 placeholderTextColor = "#9a73ef"
+                 keyboardType="numeric"
+                onChangeText = {this.handleextra}/>    
+
+           <Text style={{fontSize:20 , margin: 15,height: 25}}>Balance</Text>
+            <Text style = {{ margin: 15,height: 40,borderColor: '#7a42f4',borderWidth: 1,color:"#9a73ef"}}>
+           {Number(this.state.amouont)-(Number(this.state.bf)+Number(this.state.lun)+Number(this.state.dinner)+Number(this.state.snacks)+Number(this.state.extra))} 
+           </Text>
+            
+            <Button
+               style = {styles.submitButton}
+               onPress = {this.register_user }
+               title='click here'>
+            </Button>
+            
+         </View>
+         </ScrollView>
+      )
+   }
+}
+export default Inputs
+
+const styles = StyleSheet.create({
+   container: {
+      paddingTop: 20
+   },
+   input: {
+      margin: 15,
+      height: 40,
+      borderColor: '#7a42f4',
+      borderWidth: 1
+   },
+   submitButton: {
+      backgroundColor: '#7a42f4',
+      padding: 10,
+      margin: 15,
+      height: 40,
+   },
+   submitButtonText:{
+      color: 'white'
+   }
+})
+
+
